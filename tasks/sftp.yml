@@ -1,0 +1,56 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- name: ssh | ensure SFTP restricted usergroup
+  group:
+    name: sftponly
+    local: "{{ ssh_sftp_local_users | default('no') }}"
+    state: present
+
+- name: ssh | ensure SFTP restricted homes directory
+  file:
+    path: "{{ ssh_sftp_homes }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: ssh | ensure SFTP restricted home directories
+  file:
+    path: "{{ ssh_sftp_homes }}/{{ item.username }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop: "{{ ssh_sftp_users | flatten(levels=1) }}"
+
+- name: ssh | ensure SFTP restricted users
+  user:
+    name: "{{ item.username | mandatory }}"
+    password: "{{ item.password | mandatory }}"
+    group: sftponly
+    home: "{{ ssh_sftp_homes }}/{{ item.username }}"
+    shell: /sbin/nologin
+    create_home: no
+    local: "{{ ssh_sftp_local_users | default('no') }}"
+    comment: "{{ item.name | default(omit) }}"
+    expires: "{{ item.expires | default(omit) }}" 
+    groups: "{{ item.groups | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+    uid: "{{ item.uid | default(omit) }}"
+    update_password: "{{ item.update_password | default('always') }}"
+  loop: "{{ ssh_sftp_users | flatten(levels=1) }}"
+
+- name: ssh | ensure SFTP writable directories
+  file:
+    path: "{{ ssh_sftp_homes }}/{{ item.username }}/upload"
+    state: directory
+    owner: "{{ item.username }}"
+    group: sftponly
+    mode: 0755
+  loop: "{{ ssh_sftp_users | flatten(levels=1) }}"
+  when: item.allow_upload | default(false)
+
+- name: ssh | append SFTP configuration bits to sshd configuration variable
+  set_fact:
+    sshd_config: "{{ sshd_config | combine(ssh_sftp_config) }}"

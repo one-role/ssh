@@ -1,0 +1,7 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- name: ssh | ensure packages
+  yum:
+    name: [ openssh-server, openssh-clients, openssh ]
+    state: present

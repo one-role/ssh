@@ -1,0 +1,14 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- import_tasks: install.yml
+
+- import_tasks: sftp.yml
+  when: ssh_sftp_server
+
+- import_tasks: config.yml
+
+- import_tasks: firewall.yml
+
+- import_tasks: service.yml
+

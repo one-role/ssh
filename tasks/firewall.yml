@@ -1,0 +1,9 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- name: ssh | allow SSH traffic
+  firewalld:
+    service: ssh
+    state: enabled
+    permanent: True
+    immediate: True

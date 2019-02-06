@@ -1,0 +1,40 @@
+#
+# Ansible information:
+#     Filename : {{ template_path | regex_replace("/etc/ansible[^/]*", "...") }}
+#     Hostname : {{ template_host }}
+#     Rolename : {{ role_name }}
+
+#
+{# A macro that is reused to print a key followed by a list #}
+{% macro print_array(name, values=[]) %}
+{% for value in values -%}
+{{ name }} {{ value }}
+{% endfor -%}
+{% endmacro %}
+
+{# Start looping through key value pairs #}
+{% for key, value in config.items() %}
+{# figure out what we're dealing with #}
+{% if value is string or value is number %}
+{# simple k,v pair? print it #}
+{{ key }} {{ value }}
+{% elif value is mapping() %}
+{# a embedded dictionary print the key, walk through it and print contents indented #}
+{{ key }} 
+{% for k, v in value.items() %}
+{% if v is string or v is number %}
+  {{ k }} {{ v }}
+{% else %}
+{# it's a named list, use the macro to print it #}
+{{ print_array(k, v) | indent(2,true) }}
+{% endif %}
+{% endfor %}
+{% else %}
+{# it's a named list, use the macro to print it #}
+{{ print_array(key, value) }}
+{% endif %}
+{% endfor %}
+
+# -------------------------------------------------------------------
+# Copyright (c) 2012-today by {{ company }}
+# -------------------------------------------------------------------

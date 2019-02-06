@@ -1,0 +1,24 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- name: ssh | ensure ssh client configuration
+  template:
+    src: ssh_configurator.j2
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: 0644
+  vars:
+    config: "{{ ssh_config }}"
+
+- name: ssh | ensure ssh server configuration
+  template:
+    src: ssh_configurator.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0640
+    validate: '/sbin/sshd -t -f %s'
+  vars:
+    config: "{{ sshd_config }}"
+  notify: restart_sshd

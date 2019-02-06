@@ -1,0 +1,53 @@
+---
+
+# Configuration that ends up in the ssh_config file
+ssh_config:
+  Host *:
+    ForwardX11Trusted: 'yes'
+    GSSAPIAuthentication: 'yes'
+    SendEnv:
+      - 'LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES'
+      - 'LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT'
+      - 'LC_IDENTIFICATION LC_ALL LANGUAGE'
+      - 'XMODIFIERS'
+
+
+# Configuration that ends up in the sshd_config file
+sshd_config:
+  AcceptEnv:
+    - 'LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES'
+    - 'LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT'
+    - 'LC_IDENTIFICATION LC_ALL LANGUAGE'
+    - 'XMODIFIERS'
+  AuthorizedKeysFile: '.ssh/authorized_keys'
+  ChallengeResponseAuthentication: 'no'
+  GSSAPIAuthentication: 'yes'
+  HostKey:
+    - /etc/ssh/ssh_host_rsa_key
+    - /etc/ssh/ssh_host_ecdsa_key
+    - /etc/ssh/ssh_host_ed25519_key
+  PasswordAuthentication: 'yes'
+  PermitRootLogin: 'yes'
+  PrintLastLog: 'yes'
+  Subsystem: 'sftp /usr/libexec/openssh/sftp-server'
+  SyslogFacility: AUTHPRIV
+  TCPKeepAlive: 'yes'
+  UsePAM: 'yes'
+  UsePrivilegeSeparation: 'sandbox'
+  X11Forwarding: 'yes'
+
+
+# Set ssh_sftp_server to yes to configure SFTP-only access
+# and fill out ssh_sftp_users to manage SFTP restricted users
+ssh_sftp_server: no
+ssh_sftp_local_users: no
+ssh_sftp_users: []
+# optional extra settings you can change for the SFTP server
+ssh_sftp_homes: /home/sftp
+ssh_sftp_config:
+  Match Group sftponly:
+    ChrootDirectory: '%h'
+    ForceCommand: 'internal-sftp'
+    AllowTcpForwarding: 'no'
+    X11Forwarding: 'no'
+    PasswordAuthentication: 'yes'

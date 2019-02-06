@@ -1,0 +1,8 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+---
+
+- name: ssh | ensure OpenSSHd is started
+  service:
+    name: sshd
+    state: started
+    enabled: True
