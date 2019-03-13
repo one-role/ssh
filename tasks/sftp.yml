@@ -34,7 +34,7 @@
     create_home: no
     local: "{{ ssh_sftp_local_users | default('no') }}"
     comment: "{{ item.name | default(omit) }}"
-    expires: "{{ item.expires | default(omit) }}" 
+    expires: "{{ item.expires | default(omit) }}"
     groups: "{{ item.groups | default(omit) }}"
     state: "{{ item.state | default(omit) }}"
     uid: "{{ item.uid | default(omit) }}"

@@ -3,5 +3,8 @@
 
 - name: ssh | ensure packages
   yum:
-    name: [ openssh-server, openssh-clients, openssh ]
+    name:
+      - openssh-server
+      - openssh-clients
+      - openssh
     state: present
